@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/zaru/statuscode/model"
 	"github.com/zenazn/goji"
 	"github.com/zenazn/goji/web"
 
@@ -64,10 +65,26 @@ func view_mysql(c web.C, w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func site_lists(c web.C, w http.ResponseWriter, r *http.Request) {
+	fqdns := model.Select()
+	for i := range fqdns {
+		fmt.Fprintf(w, "%s\n", fqdns[i])
+	}
+}
+
+func site_create(c web.C, w http.ResponseWriter, r *http.Request) {
+	if r.FormValue("fqdn") == "" {
+		fmt.Fprintln(w, "error")
+	} else {
+		model.Create(r.FormValue("fqdn"))
+		fmt.Fprintln(w, "created")
+	}
+}
+
 func main() {
-	//db, err := sql.Open("mymysql", "tcp:localhost:3306*statuscode/root/")
-	//dbmap := &gorp.DbMap{Db: db, Dialect: gorp.MySQLDialect{"InnoDB", "UTF8"}}
-	//t1 := dbmap.AddTableWithName(Site{}, "sites").SetKeys(true, "Id")
+
+	goji.Get("/api/v1/sites", site_lists)
+	goji.Post("/api/v1/sites", site_create)
 
 	goji.Get("/hello/:name", hello)
 	goji.Get("/mysql", view_mysql)
