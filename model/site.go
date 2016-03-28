@@ -5,6 +5,13 @@ import (
 	"log"
 )
 
+/*
+create table sites(
+  id integer not null primary key AUTO_INCREMENT,
+  fqdn varchar(255) not null
+);
+*/
+
 var db = connection()
 
 func connection() *sql.DB {
